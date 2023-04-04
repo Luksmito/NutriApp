@@ -1,0 +1,53 @@
+from kivy.lang import Builder
+from kivy.uix.boxlayout import BoxLayout
+from kivymd.uix.button import MDIconButton
+KV = '''
+
+<PageSelector@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(48)
+    padding: dp(8)
+
+    BotaoPagina:
+        icon: 'delete'
+        color: 'black'
+        text: '<'
+        on_release: root.select_previous_page()
+
+    Label:
+        text: str(root.current_page) + 'de' + str(root.total_pages)
+        halign: 'center'
+        valign: 'middle'
+
+    BotaoPagina:
+        text: '>'
+        on_release: root.select_next_page()
+'''
+
+Builder.load_string(KV)
+
+class BotaoPagina(MDIconButton):
+    pass
+
+class SeletorPagina(BoxLayout):
+    def __init__(self,current_page=0, total_pages=0, visible_pages=[], **kwargs):
+        super(SeletorPagina, self).__init__(**kwargs)
+        self.current_page = 1
+        self.total_pages = total_pages
+        self.visible_pages = visible_pages
+        
+    def on_visible_pages(self, instance, value):
+        self.clear_widgets()
+        for page in value:
+            self.add_widget(BotaoPagina(text=str(page), on_release=lambda button: self.select_page(int(button.text))))
+
+    def select_page(self, page):
+        if 1 <= page <= self.total_pages:
+            self.current_page = page
+
+    def select_previous_page(self):
+        self.select_page(self.current_page - 1)
+
+    def select_next_page(self):
+        self.select_page(self.current_page + 1)
