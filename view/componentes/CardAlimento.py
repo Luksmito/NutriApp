@@ -7,9 +7,12 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDIconButton
+from kivymd.uix.button import MDIconButton, MDFlatButton
+from kivymd.uix.dialog import MDDialog
 
-CARD_HEIGHT = 500
+from controllers.alimento_crud import deletar_alimento
+
+CARD_HEIGHT = 900
 
 @dataclass
 class Alimento:
@@ -31,7 +34,7 @@ class Alimento:
 class CardAlimento(MDCard):
     def __init__(self,objeto: Alimento = None,**kwargs):
         super().__init__(**kwargs)
-
+        self.objeto = objeto
         #Configurações do card
         self.orientation = "vertical"
         self.md_bg_color = TERCIARY_COLOR
@@ -40,33 +43,60 @@ class CardAlimento(MDCard):
         self.valign = 'center'
         self.size_hint = (1, None)
         self.height = CARD_HEIGHT
-        self.id = objeto.id
+        self.id = self.objeto.id
         # linha de cima
         linha1 = MDBoxLayout(orientation="horizontal", size_hint_y=None, height="48dp")
-        linha1.add_widget(MDLabel(bold=True, italic=True, text=objeto.nome, font_style="H5"))
-        if objeto.descricao is not None: linha1.add_widget(MDLabel(italic=True, text=objeto.descricao, font_style="Subtitle1"))
-        linha1.add_widget(MDIconButton(icon="pencil"))
-        linha1.add_widget(MDIconButton(icon="delete"))
+        linha1.add_widget(MDLabel(bold=True, italic=True, text=self.objeto.nome, font_style="H5"))
+        if self.objeto.descricao is not None: linha1.add_widget(MDLabel(italic=True, text=self.objeto.descricao, font_style="Subtitle1"))
+        
+        botao_delete = MDIconButton(icon="delete")
+        botao_delete.bind(on_release=self.show_confirmation_dialog)
+        linha1.add_widget(botao_delete)
         
         # linha de baixo
-        linha2 = MDGridLayout(rows=4, cols=2, orientation="lr-tb", padding="8dp")
+        linha2 = MDGridLayout(rows=6, cols=2, orientation="lr-tb", padding="8dp")
 
 
-        if objeto.calorias_por_grama is not None: linha2.add_widget(MDLabel(text=f"Calorias por grama: {objeto.calorias_por_grama}kcal"))
-        if objeto.calorias_por_colher is not None: linha2.add_widget(MDLabel(text=f"Calorias por colher: {objeto.calorias_por_colher}kcal"))
-        if objeto.calorias_por_ml is not None: linha2.add_widget(MDLabel(text=f"Calorias por ml: {objeto.calorias_por_ml}kcal"))
+        if self.objeto.calorias_por_grama is not None: linha2.add_widget(MDLabel(text=f"Calorias por grama: {self.objeto.calorias_por_grama}kcal"))
+        if self.objeto.calorias_por_colher is not None: linha2.add_widget(MDLabel(text=f"Calorias por colher: {self.objeto.calorias_por_colher}kcal"))
+        if self.objeto.calorias_por_ml is not None: linha2.add_widget(MDLabel(text=f"Calorias por ml: {self.objeto.calorias_por_ml}kcal"))
         
-        if objeto.proteinas_por_grama is not None: linha2.add_widget(MDLabel(text=f"Proteínas por grama: {objeto.proteinas_por_grama}gr"))
-        if objeto.carboidratos_por_grama is not None: linha2.add_widget(MDLabel(text=f"Carboidratos por grama: {objeto.carboidratos_por_grama}gr"))
-        if objeto.gorduras_por_grama is not None: linha2.add_widget(MDLabel(text=f"Gorduras por grama: {objeto.gorduras_por_grama}gr"))
+        if self.objeto.proteinas_por_grama is not None: linha2.add_widget(MDLabel(text=f"Proteínas por grama: {self.objeto.proteinas_por_grama}gr"))
+        if self.objeto.carboidratos_por_grama is not None: linha2.add_widget(MDLabel(text=f"Carboidratos por grama: {self.objeto.carboidratos_por_grama}gr"))
+        if self.objeto.gorduras_por_grama is not None: linha2.add_widget(MDLabel(text=f"Gorduras por grama: {self.objeto.gorduras_por_grama}gr"))
 
-        if objeto.proteinas_por_colher is not None: linha2.add_widget(MDLabel(text=f"Proteinas por colher: {objeto.proteinas_por_colher}gr"))
-        if objeto.carboidratos_por_colher is not None: linha2.add_widget(MDLabel(text=f"Carboidratos por colher: {objeto.carboidratos_por_colher}gr"))
-        if objeto.gorduras_por_colher is not None: linha2.add_widget(MDLabel(text=f"Gorduras por colher: {objeto.gorduras_por_colher}gr"))
+        if self.objeto.proteinas_por_colher is not None: linha2.add_widget(MDLabel(text=f"Proteinas por colher: {self.objeto.proteinas_por_colher}gr"))
+        if self.objeto.carboidratos_por_colher is not None: linha2.add_widget(MDLabel(text=f"Carboidratos por colher: {self.objeto.carboidratos_por_colher}gr"))
+        if self.objeto.gorduras_por_colher is not None: linha2.add_widget(MDLabel(text=f"Gorduras por colher: {self.objeto.gorduras_por_colher}gr"))
         
-        if objeto.proteinas_por_ml is not None: linha2.add_widget(MDLabel(text=f"Proteinas por ml: {objeto.proteinas_por_ml}gr"))
-        if objeto.carboidratos_por_ml is not None: linha2.add_widget(MDLabel(text=f"Carboidratos por ml: {objeto.carboidratos_por_ml}gr"))
-        if objeto.gorduras_por_ml is not None: linha2.add_widget(MDLabel(text=f"Gorduras por ml: {objeto.gorduras_por_ml}gr"))
+        if self.objeto.proteinas_por_ml is not None: linha2.add_widget(MDLabel(text=f"Proteinas por ml: {self.objeto.proteinas_por_ml}gr"))
+        if self.objeto.carboidratos_por_ml is not None: linha2.add_widget(MDLabel(text=f"Carboidratos por ml: {self.objeto.carboidratos_por_ml}gr"))
+        if self.objeto.gorduras_por_ml is not None: linha2.add_widget(MDLabel(text=f"Gorduras por ml: {self.objeto.gorduras_por_ml}gr"))
         # adiciona as linhas ao Card
         self.add_widget(linha1)
         self.add_widget(linha2)
+
+    def show_confirmation_dialog(self, button):
+        dialog = MDDialog(
+            title="Excluir alimento",
+            text="Tem certeza que deseja excluir esse alimento?",
+            size_hint=(0.8, 1),
+            buttons=[
+                MDFlatButton(
+                    text="Sim",
+                    on_release=lambda x: self.deletar(dialog)
+                ),
+                MDFlatButton(
+                    text="Não",
+                    on_release=lambda x: dialog.dismiss()
+                ),
+            ]
+        )
+
+        dialog.open()
+
+    def deletar(self,*args):
+        deletar_alimento(self.objeto.nome)
+        args[0].dismiss()
+        self.parent.remove_widget(self)
+        

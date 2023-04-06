@@ -45,8 +45,8 @@ def criar_alimento(alimento):
             descricao=alimento["descricao"]
         )
         return True
-    except:
-        return False
+    except Exception as e:
+        return e
 
 def ler_alimentos(paginacao=False, items_por_pagina=10, pagina=1):
     """

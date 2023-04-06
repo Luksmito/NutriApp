@@ -1,10 +1,8 @@
 from kivy.lang import Builder
-from kivymd.uix.button import MDIconButton
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.label import MDLabel
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.behaviors import FakeRectangularElevationBehavior
+from kivymd.uix.screen import MDScreen
 
 import sys
 sys.path.append("../../")
@@ -17,7 +15,10 @@ KV = """
 MDBottomNavigation:
     
 """
+from kivymd.uix.screenmanager import MDScreenManager
 
+class MyScreenManager(MDScreenManager):
+    pass
 
 class NavBar(MDFloatLayout, FakeRectangularElevationBehavior):
     def __init__(self, manager=None, **kwargs):
@@ -28,6 +29,7 @@ class NavBar(MDFloatLayout, FakeRectangularElevationBehavior):
         self.nav = Builder.load_string(KV)
         self.nav.panel_color = PRIMARY_COLOR
         self.nav.text_color_normal = TEXT_COLOR_2
+        sm = MyScreenManager()
 
         #Cria os itens da barra de navegação
         self.dieta_nav = MDBottomNavigationItem(
@@ -52,7 +54,7 @@ class NavBar(MDFloatLayout, FakeRectangularElevationBehavior):
         self.nav.add_widget(self.dieta_nav)
         self.nav.add_widget(self.refeicao_nav)
         self.nav.add_widget(self.alimento_nav)
-
+        #self.nav.add_widget(MDScreen(name="nome"))
         #Adiciona a barra a tela
         self.add_widget(self.nav)
 
