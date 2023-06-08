@@ -13,7 +13,7 @@ class SeletorPagina(MDGridLayout):
         self.size_hint_y = None
         self.current_page = 1
         
-        self.total_pages = total_pages
+        self.total_pages = total_pages if total_pages >= 1 else 1
         self.visible_pages = visible_pages
         self.current_page = current_page
         self.label = MDLabel(text=str(self.current_page) + ' de ' + str(self.total_pages),halign='center', valign='middle')

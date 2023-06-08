@@ -1,6 +1,18 @@
 import sys
 sys.path.append("../")
-from model.model import Refeicao, AlimentoRefeicao, Alimento
+from model.model import Refeicao, AlimentoRefeicao
+from peewee import fn
+
+def busca_refeicoes(nome):
+    try:
+        refeicao = Refeicao.select().where(fn.lower(Refeicao.nome).contains(nome))
+        return refeicao
+    except Exception as e:
+        print(e)
+        return None
+
+def quantidade_refeicoes():
+    return Refeicao.select().count()
 
 def criar_refeicao(refeicao):
     """
@@ -23,7 +35,7 @@ def criar_refeicao(refeicao):
     except:
         return False
 
-def ler_refeicoes():
+def ler_refeicoes(paginacao=False, items_por_pagina=10, pagina=1):
     """
     Lê todas as refeições no banco de dados.
 
@@ -33,10 +45,14 @@ def ler_refeicoes():
     """
 
     try:
-        refeicoes = Refeicao.select()
+        refeicoes = Refeicao.select().order_by(Refeicao.nome)
+        if paginacao:
+            refeicoes = refeicoes.paginate(pagina, items_por_pagina)
         return refeicoes
     except:
         return None
+
+
 
 def ler_refeicao(nome):
     """
@@ -51,9 +67,11 @@ def ler_refeicao(nome):
     """
 
     try:
-        refeicao = Refeicao.select().where(Refeicao.nome == nome).get()
+        
+        refeicao = Refeicao.select().where(fn.lower(Refeicao.nome).contains(nome)).get()
         return refeicao
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 def atualizar_refeicao(nome, refeicao):
@@ -142,7 +160,7 @@ def remove_alimento(refeicao, alimento):
         alimentos.delete_instance()
         return True
     except Exception as e:
-        print(f"{e}")
+        print(f"ERRO remove_alimento {e}")
         return False
 
 def ler_alimentos_refeicao(refeicao):
@@ -161,7 +179,22 @@ def ler_alimentos_refeicao(refeicao):
     except:
         return None
 
+def retorna_alimentos_refeicao():
+    try:
+        refeicoes = AlimentoRefeicao.select()
+        return refeicoes
+    except Exception as e:
+        print("ERRO retorna_alimentos_refeicao", e)
+        return None
+
 def processa_quantidade(quantidade):
+    """Processa a quantidade para retornar o valor e a medida:
+        Args:
+        quantidade (str): a string da quantidade ex: 125gr
+        Return:
+            (float, str)
+            ex: (175, ml)
+    """
     numero = ''
     for i in quantidade:
         if i.isdigit() or i == ".":
@@ -215,9 +248,39 @@ def calcula_informacoes_nutricionais(refeicao):
                 refeicao_atualizada["proteinas_totais"] += alimento.alimento.proteinas_por_colher*quantidade[0]
             elif alimento.alimento.proteinas_por_ml is not None and quantidade[1] == 'ml':
                 refeicao_atualizada["proteinas_totais"] += alimento.alimento.proteinas_por_ml*quantidade[0]
-        
+        for key, val in refeicao_atualizada.items():
+            refeicao_atualizada[key] = round(refeicao_atualizada[key])
         atualizar_refeicao(refeicao.nome, refeicao_atualizada)
         return True
     except Exception as e:
         print(f"Erro: {e}")
+        return False
+
+def modifica_quantidades(refeicao, fator):
+    try:
+        alimentos = AlimentoRefeicao.select().where(AlimentoRefeicao.refeicao == refeicao)
+        refeicao_nova = {
+            "nome": refeicao.nome + " " + str(refeicao.calorias_totais) + "kcal",
+            "descricao": refeicao.descricao,
+            "calorias_totais": refeicao.calorias_totais,
+            "proteinas_totais": refeicao.proteinas_totais,
+            "gorduras_totais": refeicao.gorduras_totais,
+            "carboidratos_totais": refeicao.carboidratos_totais
+        }
+        
+        criar_refeicao(refeicao_nova)
+        refeicao_nova = ler_refeicao(refeicao_nova['nome'])
+        
+        for alimento in alimentos:
+            print(alimento.alimento.nome)
+            quantidade = alimento.quantidade[:-2]
+            tipo_quantidade = alimento.quantidade[-2:]
+            quantidade = float(quantidade)
+            quantidade = round(quantidade*fator, 1)
+            add_alimento(refeicao_nova, alimento.alimento, str(quantidade)+tipo_quantidade)
+        
+        calcula_informacoes_nutricionais(refeicao_nova)
+        return refeicao_nova
+    except Exception as e:
+        print(e)
         return False

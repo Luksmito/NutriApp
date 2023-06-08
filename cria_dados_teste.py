@@ -165,7 +165,7 @@ def popular_banco_de_dados():
 
 
 
-#popular_banco_de_dados()
+popular_banco_de_dados()
 
 
 

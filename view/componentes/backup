@@ -1,53 +1,28 @@
-from kivy.lang import Builder
-from kivy.uix.boxlayout import BoxLayout
-from kivymd.uix.button import MDIconButton
-KV = '''
-
-<PageSelector@BoxLayout>:
-    orientation: 'horizontal'
-    size_hint_y: None
-    height: dp(48)
-    padding: dp(8)
-
-    BotaoPagina:
-        icon: 'delete'
-        color: 'black'
-        text: '<'
-        on_release: root.select_previous_page()
-
-    Label:
-        text: str(root.current_page) + 'de' + str(root.total_pages)
-        halign: 'center'
-        valign: 'middle'
-
-    BotaoPagina:
-        text: '>'
-        on_release: root.select_next_page()
-'''
-
-Builder.load_string(KV)
-
-class BotaoPagina(MDIconButton):
-    pass
-
-class SeletorPagina(BoxLayout):
-    def __init__(self,current_page=0, total_pages=0, visible_pages=[], **kwargs):
-        super(SeletorPagina, self).__init__(**kwargs)
-        self.current_page = 1
-        self.total_pages = total_pages
-        self.visible_pages = visible_pages
+class EscolhaDeArquivo(MDFileManager):
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.manager_open = False
+        self.file_manager = MDFileManager(
+            exit_manager=self.exit_manager, select_path=self.select_path
+        )
         
-    def on_visible_pages(self, instance, value):
-        self.clear_widgets()
-        for page in value:
-            self.add_widget(BotaoPagina(text=str(page), on_release=lambda button: self.select_page(int(button.text))))
+    def file_manager_open(self):
+        self.file_manager.show(os.path.expanduser("~"))  # output manager to the screen
+        self.manager_open = True
 
-    def select_page(self, page):
-        if 1 <= page <= self.total_pages:
-            self.current_page = page
+    def select_path(self, path: str):
+        '''
+        It will be called when you click on the file name
+        or the catalog selection button.
 
-    def select_previous_page(self):
-        self.select_page(self.current_page - 1)
+        :param path: path to the selected directory or file;
+        '''
 
-    def select_next_page(self):
-        self.select_page(self.current_page + 1)
+        self.exit_manager()
+        toast(path)
+
+    def exit_manager(self, *args):
+        '''Called when the user reaches the root of the directory tree.'''
+
+        self.manager_open = False
+        self.file_manager.close()

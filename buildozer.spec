@@ -4,7 +4,7 @@
 title = NutriApp
 
 # (str) Package name
-package.name = myapp
+package.name = nutriapp
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.Nutriapp
@@ -37,17 +37,17 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = kivy==2.1.0,python3,kivymd==1.0.1,peewee,PIL
+requirements = kivy==2.1.0,python3,kivymd==1.0.1,peewee,PIL,fpdf
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/data/splash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/data/icone.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
@@ -95,7 +95,7 @@ fullscreen = 0
 
 # (list) Permissions
 # (See https://python-for-android.readthedocs.io/en/latest/buildoptions/#build-options-1 for all the supported syntaxes and properties)
-android.permissions = android.permission.INTERNET, android.permission.WRITE_EXTERNAL_STORAGE;maxSdkVersion=18
+android.permissions = android.permission.INTERNET, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE;maxSdkVersion=18
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host

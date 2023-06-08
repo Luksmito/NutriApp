@@ -49,7 +49,7 @@ class AlimentoRefeicao(Model):
         database = db
 
 class Dieta(Model):
-    nome = CharField(max_length=40)
+    nome = CharField(unique=True, max_length=40)
     descricao = TextField(null=True)
     refeicoes = ManyToManyField(model=Refeicao, backref='dietas', on_delete="CASCADE", on_update="CASCADE")
     calorias_totais = FloatField(null=True)

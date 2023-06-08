@@ -1,11 +1,13 @@
 import sys
 sys.path.append("/home/mrbushido/Documentos/programacao/NutriApp")
+sys.path.append("./")
 from model.model import Alimento
 from peewee import fn
+from controllers.refeicao_crud import retorna_alimentos_refeicao, remove_alimento
 
 def busca_alimentos(nome):
     try:
-        alimento = Alimento.select().where(fn.lower(Alimento.nome).contains(nome.lower()))
+        alimento = Alimento.select().where(fn.lower(Alimento.nome).contains(nome))
         return alimento
     except:
         return None
@@ -78,7 +80,8 @@ def ler_alimento(nome):
     """
 
     try:
-        alimento = Alimento.select().where(Alimento.nome == nome).get()
+
+        alimento = Alimento.select().where(fn.lower(Alimento.nome).contains(nome)).get()
         return alimento
     except:
         return None
@@ -145,7 +148,11 @@ def deletar_alimento(nome):
      
     try:
         alimento = Alimento.select().where(Alimento.nome == nome).get()
+        for alimento_refeicao in retorna_alimentos_refeicao():
+            if alimento_refeicao.alimento.nome == alimento.nome:
+                alimento_refeicao.delete_instance()
         alimento.delete_instance()
         return True
-    except:
+    except Exception as e:
+        print("ERRO ", e)
         return False

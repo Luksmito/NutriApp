@@ -1,0 +1,12 @@
+Observações testes dia 16/05/2023:
+    -Não consigo adicionar refeições iguais a mesma dieta
+    
+    -É necessário que haja como modificar a ordem que as refeições aparecem
+
+Próximos passos:
+    -Modificar os textos para ficar mais adequado aos usuários, isso quer dizer
+    trocar os campos "algumacoisa_por_grama" por "algumacoisa_por_cemgramas"
+
+    -Implementar as funcionalidades de modificar refeições e dietas de forma a atualizar as
+    quantidades de cada alimento para se adequar a uma nova necessidade calórica
+
