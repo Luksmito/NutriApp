@@ -13,7 +13,12 @@ def gerar_pdf(dieta, caminho):
     pdf.cell(0, 10, dieta.nome , 0, 1, "C")
     pdf.set_font("Arial", "I", 12)
     pdf.cell(0, 20, dieta.descricao, 0, 1, "C")
-    pdf.set_font("Arial", "", 16)
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "Informações nutricionais" , 1, 1, "L")
+    pdf.set_font("Arial", "", 14)
+    texto = f"Calorias: {dieta.calorias_totais}\
+        \nProteínas: {dieta.proteinas_totais}\nGorduras: {dieta.gorduras_totais}\nCarboídratos: {dieta.carboidratos_totais}"
+    pdf.multi_cell(0,10,texto, 0, 1, "L")
     
     for refeicao in dieta.refeicoes:
         pdf.set_font("Arial", "", 18)

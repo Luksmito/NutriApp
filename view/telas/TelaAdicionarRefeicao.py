@@ -75,6 +75,17 @@ class TelaAdicionarRefeicao(MDScreen):
             self.criar_refeicao_db()
         self.manager.troca_tela_refeicoes(self.atualizado)
 
+    
+    def atualiza_refeicao(self, *args):
+        refeicao = self.refeicao
+        self.atualizado = True
+        for alimento in self.alimentos_adicionados:
+            if alimento not in refeicao.alimentos:
+                add_alimento(refeicao, alimento)
+        calcula_informacoes_nutricionais(self.refeicao)
+        self.label_erros.text = "Refeição atualizada com sucesso"
+        self.label_erros.color = PRIMARY_COLOR
+    
     def criar_refeicao_db(self,*args):
         if not self.atualizacao:
             refeicao = {

@@ -32,19 +32,21 @@ if platform == "android":
 class EscolhaDeArquivo(MDFileManager):
     """Classe que implementa as funcionalidades da tela de escolher um diretório"""
     
-    def __init__(self,dieta,**kwargs):
+    def __init__(self,dieta,card,**kwargs):
         super().__init__(**kwargs)
         self.manager_open = False
+        self.card = card
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager, select_path=self.select_path
         )
         self.dieta = dieta
         
         
-    def file_manager_open(self):
+    def file_manager_open(self, *args):
         self.file_manager.show(path_home)  # output manager to the screen
         self.manager_open = True
-
+          
+    
     def select_path(self, path: str):
         '''
         It will be called when you click on the file name
@@ -52,15 +54,18 @@ class EscolhaDeArquivo(MDFileManager):
 
         :param path: path to the selected directory or file;
         '''
+        
         self.clear_widgets()
         self.exit_manager()
         gerar_pdf(self.dieta, path)
         toast(f"PDF salvo em: {path}" )
         
         
+        
     def exit_manager(self, *args):
         '''Called when the user reaches the root of the directory tree.'''
-
+        self.card.clear_widgets()
+        self.card.criar_card()
         self.manager_open = False
         self.file_manager.close()
 
@@ -81,16 +86,26 @@ class CardDieta(MDCard):
         self.size_hint = (1, None)
         self.height = 700
         self.objeto = objeto
+        self.criar_card()
+       
+    
+    def gera_pdf(self,*args):
+        self.clear_widgets()
+        self.add_widget(TelaCarregamento())
+        files = EscolhaDeArquivo(self.objeto, self)
+        Clock.schedule_once(files.file_manager_open)
         
-        # linha de cima
+    def criar_card(self, *args):
+        self.clear_widgets()
+         # linha de cima
         linha1 = MDGridLayout(rows=3,cols=3,orientation="tb-lr",padding="8dp")
-        linha1.add_widget(MDLabel(bold=True, italic=True, text=objeto.nome, font_style="H5"))
-        if objeto.descricao is not None: linha1.add_widget(MDLabel(italic=True, text=objeto.descricao, font_style="Body1"))
+        linha1.add_widget(MDLabel(bold=True, italic=True, text=self.objeto.nome, font_style="H5"))
+        if self.objeto.descricao is not None: linha1.add_widget(MDLabel(italic=True, text=self.objeto.descricao, font_style="Body1"))
         
         else: linha1.add_widget(MDWidget())
         
-        if objeto.calorias_totais is not None: 
-            linha1.add_widget(MDLabel(valign="center", text=f"Calorias totais: {str(objeto.calorias_totais)}kcal")) 
+        if self.objeto.calorias_totais is not None: 
+            linha1.add_widget(MDLabel(valign="center", text=f"Calorias totais: {str(self.objeto.calorias_totais)}kcal")) 
         else: 
             linha1.add_widget(MDWidget())
         
@@ -108,7 +123,7 @@ class CardDieta(MDCard):
         # linha de baixo
         linha2 = MDGridLayout(rows=4, cols=2, orientation="lr-tb", padding="8dp")
 
-        refeicoes = objeto.refeicoes
+        refeicoes = self.objeto.refeicoes
         refeicoes = [refeicao for refeicao in refeicoes]
         for refeicao in refeicoes:
             texto = f"{refeicao.nome}: {refeicao.calorias_totais}kcal" if refeicao.calorias_totais is not None else f"{refeicao.nome}"
@@ -117,11 +132,6 @@ class CardDieta(MDCard):
         # adiciona as linhas ao Card
         self.add_widget(linha1)
         self.add_widget(linha2)
-    
-    def gera_pdf(self,*args):
-        files = EscolhaDeArquivo(self.objeto)
-        files.file_manager_open()
-
     
     def show_confirmation_dialog(self, button):
         dialog = MDDialog(

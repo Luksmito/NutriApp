@@ -29,7 +29,7 @@ from view.telas.TelaAdicionarAlimento import TelaAdicionarAlimento
 from view.colors_definitions import ERROR_COLOR, PRIMARY_COLOR
 from controllers.alimento_crud import *
 
-CARDS_POR_TELA = 7
+CARDS_POR_TELA = 3
 class TelaAlimentosManager(MDScreenManager):
     def __init__(self, **kwargs):
         super(TelaAlimentosManager, self).__init__(**kwargs)

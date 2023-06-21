@@ -142,16 +142,18 @@ def exibe_informacoes_refeicao(refeicao_nome):
 
 
 def popular_banco_de_dados():
-    data = pd.read_csv("taco-db-nutrientes.csv", error_bad_lines=False)
+    data = pd.read_excel("Taco.xlsx")
+    #print(data.head())
+    #exit()
     for _, serie in data.iterrows():
         alimento = {
-            "nome": serie[" Nome"].strip(),
+            "nome": serie["Descrição do Alimento"].strip(),
             "calorias_por_ml": None,
             "calorias_por_colher": None,
-            "calorias_por_grama": float(serie[" Energia (kcal)"])/100 if serie[" Energia (kcal)"].strip().isdigit() else None,
-            "carboidratos_por_grama": float(serie[" Carboidrato (g)"])/100 if serie[" Carboidrato (g)"].strip().isdigit() else None,
-            "gorduras_por_grama": float(serie[" Lipídeos (g)"])/100 if serie[" Lipídeos (g)"].strip().isdigit() else None,
-            "proteinas_por_grama": float(serie[" Proteína (g)"])/100 if serie[" Proteína (g)"].strip().isdigit() else None,
+            "calorias_por_grama": round(serie["Energia(kcal)"]/100,2) if type(serie["Energia(kcal)"]) == float else 0,
+            "carboidratos_por_grama": round(serie["Carboidrato(g)"]/100,2) if type(serie["Carboidrato(g)"]) == float else 0,
+            "gorduras_por_grama": round(serie["Lipídeos(g)"]/100,2) if type(serie["Lipídeos(g)"]) == float else 0,
+            "proteinas_por_grama": round(serie["Proteína(g)"]/100,2) if type(serie["Proteína(g)"]) == float else 0,
             "carboidratos_por_colher": None,
             "proteinas_por_colher": None,
             "gorduras_por_colher": None,
@@ -160,7 +162,7 @@ def popular_banco_de_dados():
             "proteinas_por_ml": None,
             "descricao": None
         }
-        print(alimento_controller.criar_alimento(alimento))
+        print(f"Alimento: {alimento['nome']}: ",alimento_controller.criar_alimento(alimento))
 
 
 

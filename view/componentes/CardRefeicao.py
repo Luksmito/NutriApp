@@ -65,8 +65,8 @@ class CardRefeicao(MDCard):
     
     def show_confirmation_dialog(self, button):
         dialog = MDDialog(
-            title="Excluir alimento",
-            text="Tem certeza que deseja excluir esse alimento?",
+            title="Excluir refeição",
+            text="Tem certeza que deseja excluir essa refeição?",
             size_hint=(0.8, 1),
             buttons=[
                 MDFlatButton(

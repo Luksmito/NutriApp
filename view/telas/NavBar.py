@@ -2,7 +2,6 @@ from kivy.lang import Builder
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.behaviors import FakeRectangularElevationBehavior
-from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
 
 import sys

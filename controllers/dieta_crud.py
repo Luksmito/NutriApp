@@ -123,10 +123,11 @@ def deletar_dieta(nome):
      
     try:
         dieta = Dieta.select().where(Dieta.nome == nome).get()
+        dieta.refeicoes.clear()
         dieta.delete_instance()
         return True
-    except:
-        return False
+    except Exception as e:
+        print(f"deletar_dieta: {e}")
 
 
 def add_refeicao(refeicao, dieta):

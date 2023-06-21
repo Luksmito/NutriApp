@@ -72,21 +72,17 @@ class TelaAdicionarDieta(MDScreen):
         print(checkbox)
 
     def criar_dieta_db(self,*args):
-        if not self.atualizacao:
-            dieta = {
-                "nome": self.nome_input.text,
-                "descricao": self.descricao.text
-            }
-            resposta = criar_dieta(dieta)
-        else:
-            resposta = True
+        
+        dieta = {
+            "nome": self.nome_input.text,
+            "descricao": self.descricao.text
+        }
+        resposta = criar_dieta(dieta)
+       
 
         if resposta == True:
-            if not self.atualizacao:
-                dieta = ler_dieta(dieta["nome"])
-            else:
-                dieta=self.dieta
-                self.atualizado = True
+            dieta = ler_dieta(dieta["nome"])
+            
             for refeicao in self.refeicoes_adicionados:
                 add_refeicao(refeicao, dieta)    
             calcula_informacoes_nutricionais(dieta)
@@ -128,10 +124,7 @@ class TelaAdicionarDieta(MDScreen):
         
 
     def funcao_retorno(self,*args):
-        if self.atualizacao and not self.atualizado:
-            self.criar_dieta_db()
-        
-        self.manager.current = 'tela-dietas'
+        self.manager.troca_tela_dietas(self.atualizado)
     
     def is_float(self,string):
         """Função para verificar se um string é um float"""
@@ -156,12 +149,18 @@ class TelaAdicionarDieta(MDScreen):
             for refeicao in self.refeicoes_adicionados:
                 refeicoes_novas.append(modifica_quantidades(refeicao, proporcao))
             
-            for refeicao_antiga, refeicao_nova in zip(self.refeicoes_adicionados, refeicoes_novas):
+            print("self.refeicoes_adicionados: ", self.refeicoes_adicionados)
+            print("self.refeicoes_novas: ", refeicoes_novas)
+            for refeicao_antiga in self.refeicoes_adicionados:
                 remove_refeicao(self.dieta, refeicao_antiga)
-                self.remover_refeicao(refeicao_antiga.nome)
+                
+            for refeicao_nova in refeicoes_novas:
                 add_refeicao(refeicao_nova, self.dieta)
                 
+            self.refeicoes_adicionados = refeicoes_novas
             calcula_informacoes_nutricionais(self.dieta)
+            
+            self.atualizado = True
             self.label_erros.text = "Dieta criada com sucesso"
             self.label_erros.color = PRIMARY_COLOR
         else:
@@ -181,7 +180,8 @@ class TelaAdicionarDieta(MDScreen):
     def pesquisa(self, *args):
         args[0].clear_widgets()
         refeicao = ler_refeicao(args[1])
-        self.refeicao = refeicao[0] if type(refeicao) == list else refeicao
+        self.refeicao = refeicao
+        print(type(refeicao))
         if refeicao:
             args[0].add_widget(CardRefeicao(objeto=refeicao, mostrar_delete=False, mostrar_edit=False))
             self.barra_pesquisa_label.text = ""
@@ -231,7 +231,7 @@ class TelaAdicionarDieta(MDScreen):
                 self.refeicoes_adicionados.append(refeicao)
                 self.calcula_calorias_totais()
                 self.refeicoes_adicionados_widgets.add_widget(CardRefeicao(objeto=refeicao, mostrar_delete=True, mostrar_edit=False, deletar_do_banco=False))
-                #remove_refeicao(self.dieta, refeicao)
+                
             
                 
         self.adicionar_refeicoes = MDGridLayout(cols=1,size_hint_y=None, padding=[40,40,40,40], spacing=50)

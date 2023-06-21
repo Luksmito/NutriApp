@@ -29,8 +29,8 @@ class TelaRefeicoesManager(MDScreenManager):
         self.add_widget(self.tela_adicionar_refeicoes)
     
     def troca_tela_refeicoes(self, atualizado):
-        if atualizado:
-            self.tela_refeicoes.criar_tela()
+        
+        self.tela_refeicoes.criar_tela()
         self.current = 'tela-refeicoes'
     
     def troca_tela_addrefeicao(self, refeicao, atualizacao):

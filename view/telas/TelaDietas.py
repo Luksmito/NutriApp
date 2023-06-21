@@ -21,28 +21,34 @@ from controllers.dieta_crud import *
 CARDS_POR_TELA = 3
 
 
+
 class TelaDietasManager(MDScreenManager):
     def __init__(self, **kwargs):
         super(TelaDietasManager, self).__init__(**kwargs)
         self.tela_adicionar_dietas = TelaAdicionarDieta(name="tela-add-dietas")
-        self.add_widget(TelaDietas(name="tela-dietas"))
+        self.tela_dietas = TelaDietas(name="tela-dietas")
+        self.add_widget(self.tela_dietas)
         self.add_widget(self.tela_adicionar_dietas)
         self.on_start()
     
-    def troca_tela(self, dieta, atualizacao):
+    def troca_tela_dietas(self, atualizado):
+        
+        self.tela_dietas.criar_tela()
+        self.current = 'tela-dietas'
+    
+    def troca_tela_adddieta(self, dieta, atualizacao):
         if atualizacao:
             self.remove_widget(self.tela_adicionar_dietas)
             self.tela_adicionar_dietas = TelaAdicionarDieta(name="tela-add-dietas", atualizacao=True, dieta=dieta)
             self.add_widget(self.tela_adicionar_dietas)
             self.current = 'tela-add-dietas'
-        elif self.tela_adicionar_dietas.dieta == None: 
+        elif self.tela_adicionar_dietas.dieta== None: 
             self.current = 'tela-add-dietas'     
         else: 
             self.remove_widget(self.tela_adicionar_dietas)
             self.tela_adicionar_dietas = TelaAdicionarDieta(name="tela-add-dietas")
             self.add_widget(self.tela_adicionar_dietas)
             self.current = 'tela-add-dietas'
-            
     
     def key_input(self, window, key, scancode, codepoint, modifier):
         if key == 27:
@@ -57,15 +63,17 @@ class TelaDietasManager(MDScreenManager):
 class TelaDietas(MDScreen):
     def __init__(self, **kwargs):
         super(TelaDietas, self).__init__(**kwargs)
+        
         self.total_pages = math.ceil(quantidade_dietas()/CARDS_POR_TELA) 
         self.pagina_atual = 1
         self.busca=False
         self.criar_tela()
     
 
+    
     def tela_adicionar_dieta(self, *args):
         """Chama a tela de formulario para adicionar alimento"""
-        self.manager.troca_tela(args[0], args[1])
+        self.manager.troca_tela_adddieta(args[0], args[1])
         
     
 

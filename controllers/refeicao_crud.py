@@ -1,7 +1,8 @@
 import sys
 sys.path.append("../")
-from model.model import Refeicao, AlimentoRefeicao
+from model.model import Refeicao, AlimentoRefeicao, Dieta
 from peewee import fn
+import re
 
 def busca_refeicoes(nome):
     try:
@@ -68,7 +69,7 @@ def ler_refeicao(nome):
 
     try:
         
-        refeicao = Refeicao.select().where(fn.lower(Refeicao.nome).contains(nome)).get()
+        refeicao = Refeicao.select().where(fn.lower(Refeicao.nome).contains(nome)).first(n=1)
         return refeicao
     except Exception as e:
         print(e)
@@ -120,10 +121,18 @@ def deletar_refeicao(nome):
      
     try:
         refeicao = Refeicao.select().where(Refeicao.nome == nome).get()
+        dietas = Dieta.select()
+        for dieta in dietas:
+            if refeicao in dieta.refeicoes:
+                dieta.refeicoes.remove(refeicao)
+        alimentos = ler_alimentos_refeicao(refeicao)
+        for alimento in alimentos:
+            alimento.delete_instance()
+        
         refeicao.delete_instance()
         return True
-    except:
-        return False
+    except Exception as e:
+        print(f"deletar_refeicao: {e}")
 
 def add_alimento(refeicao, alimento, quantidade=None):
     """
@@ -138,6 +147,8 @@ def add_alimento(refeicao, alimento, quantidade=None):
     """
 
     try:
+        if quantidade == None:
+            quantidade = "0gr"
         AlimentoRefeicao.create(refeicao=refeicao.id, alimento=alimento.id, quantidade=quantidade)
         return True
     except Exception as e:
@@ -259,8 +270,10 @@ def calcula_informacoes_nutricionais(refeicao):
 def modifica_quantidades(refeicao, fator):
     try:
         alimentos = AlimentoRefeicao.select().where(AlimentoRefeicao.refeicao == refeicao)
+        nome = re.sub(r'\s*\d+(\.\d+)?kcal', '', refeicao.nome)
+            
         refeicao_nova = {
-            "nome": refeicao.nome + " " + str(refeicao.calorias_totais) + "kcal",
+            "nome": nome + " " + str(round(refeicao.calorias_totais * fator)) + "kcal",
             "descricao": refeicao.descricao,
             "calorias_totais": refeicao.calorias_totais,
             "proteinas_totais": refeicao.proteinas_totais,

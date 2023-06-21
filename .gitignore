@@ -1,1 +1,8 @@
 .buildozer
+*.txt
+*.csv
+*.pdf
+*.apk
+*.txt
+*.xlsx
+splashscreen.splashscreen

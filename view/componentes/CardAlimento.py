@@ -46,6 +46,10 @@ class CardAlimento(MDCard):
         
         # linha de cima
         linha1 = MDBoxLayout(orientation="horizontal", size_hint_y=None, height="48dp")
+        
+        # linha de baixo
+        linha2 = MDGridLayout(rows=6, cols=2, orientation="lr-tb", padding="8dp")
+        
         linha1.add_widget(MDLabel(bold=True, italic=True, text=self.objeto.nome, font_style="H5"))
         if self.objeto.descricao is not None: linha1.add_widget(MDLabel(italic=True, text=self.objeto.descricao, font_style="Subtitle1"))
         
@@ -54,17 +58,17 @@ class CardAlimento(MDCard):
             botao_delete.bind(on_release=self.show_confirmation_dialog)
             linha1.add_widget(botao_delete)
         
-        # linha de baixo
-        linha2 = MDGridLayout(rows=6, cols=2, orientation="lr-tb", padding="8dp")
+        
 
         if mostrar_atributos: 
             self.height = CARD_HEIGHT
+        
             if self.objeto.calorias_por_grama is not None: linha2.add_widget(MDLabel(text=f"Calorias em 100 gramas: {self.objeto.calorias_por_grama*100:.2f}kcal"))
             if self.objeto.calorias_por_colher is not None: linha2.add_widget(MDLabel(text=f"Calorias por colher: {self.objeto.calorias_por_colher}kcal"))
             if self.objeto.calorias_por_ml is not None: linha2.add_widget(MDLabel(text=f"Calorias em 100 ml's: {self.objeto.calorias_por_ml*100:.2f}kcal"))
             
             if self.objeto.proteinas_por_grama is not None: linha2.add_widget(MDLabel(text=f"Proteínas em 100 gramas: {self.objeto.proteinas_por_grama*100:.2f}gr"))
-            if self.objeto.carboidratos_por_grama is not None: linha2.add_widget(MDLabel(text=f"Carboidratos em 100 gramas: {self.objeto.carboidratos_por_grama*100}gr"))
+            if self.objeto.carboidratos_por_grama is not None: linha2.add_widget(MDLabel(text=f"Carboidratos em 100 gramas: {self.objeto.carboidratos_por_grama*100:.2f}gr"))
             if self.objeto.gorduras_por_grama is not None: linha2.add_widget(MDLabel(text=f"Gorduras em 100 gramas: {self.objeto.gorduras_por_grama*100:.2f}gr"))
 
             if self.objeto.proteinas_por_colher is not None: linha2.add_widget(MDLabel(text=f"Proteinas por colher: {self.objeto.proteinas_por_colher}gr"))
